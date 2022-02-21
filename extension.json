@@ -1,0 +1,56 @@
+{
+  "displayName": "Google Analytics 4 - GA4",
+  "name": "google-analytics-4-ga4",
+  "platform": "web",
+  "version": "0.0.1",
+  "description": "This extension aims to make it easier to implement GA4 tracking through Launch",
+  "author": {
+    "name": "Bogdan Nazaruk"
+  },
+  "viewBasePath": "src/view/",
+  "configuration": {
+    "viewPath": "configuration/configuration.html",
+    "schema": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "properties": {}
+    }
+  },
+  "actions": [
+    {
+      "displayName": "GA4: Pageview",
+      "name": "ga4-pageview",
+      "schema": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type": "object",
+        "properties": {}
+      },
+      "libPath": "src/lib/actions/ga4Pageview.js",
+      "viewPath": "actions/ga4Pageview.html"
+    },
+    {
+      "displayName": "GA4: Event",
+      "name": "ga4-event",
+      "schema": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type": "object",
+        "properties": {}
+      },
+      "libPath": "src/lib/actions/ga4Event.js",
+      "viewPath": "actions/ga4Event.html"
+    }
+  ],
+  "dataElements": [
+    {
+      "displayName": "GA4: Settings",
+      "name": "ga4-settings",
+      "schema": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type": "object",
+        "properties": {}
+      },
+      "libPath": "src/lib/dataElements/ga4Settings.js",
+      "viewPath": "dataElements/ga4Settings.html"
+    }
+  ]
+}
