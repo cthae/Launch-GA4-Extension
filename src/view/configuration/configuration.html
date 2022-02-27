@@ -1,6 +1,58 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <style>
+      body {
+        font: 1em sans-serif;
+        padding: 0;
+        margin : 0 auto;
+      }
+
+      p * {
+        display: block;
+      }
+
+      input[type=email]{
+        -webkit-appearance: none;
+        appearance: none;
+
+        width: 100%;
+        border: 1px solid #333;
+        margin: 0;
+
+        font-family: inherit;
+        font-size: 90%;
+
+        box-sizing: border-box;
+      }
+
+      /* This is our style for the invalid fields */
+      input:invalid {
+        border-color: #900;
+        background-color: #FDD;
+      }
+
+      input:focus:invalid {
+        outline: none;
+      }
+
+      /* This is the style of our error messages */
+      .error {
+        width  : 100%;
+        padding: 0;
+
+        font-size: 80%;
+        color: white;
+        background-color: #900;
+        border-radius: 0 0 5px 5px;
+
+        box-sizing: border-box;
+      }
+
+      .error.active {
+        padding: 0.3em;
+      }
+    </style>
     <meta charset="UTF-8">
     <title>Extension Configuration</title>
   </head>
@@ -13,12 +65,12 @@
         <tr id="tr-0">
           <td name="alias">
             <label>GA4 Source Alias :</label>
-            <input type="text" id="measurementAlias-0" minlength="1" value="Default">
+            <input type="text" id="measurementAlias-0" required maxlength="20" minlength="1" value="Default">
           </td>
           <td width="20"></td>
           <td name="mID">
             <label>GA4 Source Measurement ID :</label>
-            <input type="text" id="measurementId-0" maxlength="12" minlength="12" placeholder="G-XXXXXXXXXX">
+            <input type="text" id="measurementId-0" required maxlength="12" minlength="12" pattern="(G|g)-\w{10}" placeholder="G-XXXXXXXXXX">
           </td>
         </tr>
       </table>
@@ -27,7 +79,7 @@
     <table>
       <tr>
         <td>
-          <button id="addSource" onclick="addSource()">Add another GA4 Source</button>
+          <button id="addSource" onclick="addSource('', '')">Add another GA4 Source</button>
         </td>
         <td width="40"></td>
         <td>
@@ -35,45 +87,69 @@
         </td>
       </tr>
     </table>
-    
-    
+    <br>
 
+    <input type="checkbox" id="libPreloader" checked>Pre-load the library on every page where the Launch property is installed? (recommended for typical GA tracking where all or most pages are tracked)</input>
     <script src="https://assets.adobedtm.com/activation/reactor/extensionbridge/extensionbridge.min.js"></script>
+    <script>//Globals:
+      const mainForm = document.querySelector("table#mainSources");
+    </script>
     <script>
-      function addSource(){
-          const count = document.querySelector("table#mainSources").querySelectorAll("tr").length;
-          const newRow = document.querySelector("tr#tr-0").cloneNode(true);
-          newRow.id = "tr-"+count;
+      function addSource(alias = "", mID = ""){
+        const newRow = document.querySelector("tr#tr-0").cloneNode(true);
+        const count = mainForm.querySelectorAll("tr").length;
+        newRow.id = "tr-"+count;
           newRow.querySelectorAll("td").forEach(td => {
             const name = td.getAttribute("name");
-            if (name == "alias" || name == "mID"){
-              td.querySelector("label").innerHTML = td.querySelector("label").innerHTML.replace(" :", + count + ":");
-              td.querySelector("input").id = td.querySelector("input").getAttribute("id").replace("0",count);
-              td.querySelector("input").value = "";
+            if (name === "alias"){
+              td.querySelector("input").id = td.querySelector("input").getAttribute("id").replace("0", count);
+              td.querySelector("input").value = alias;
+            } else if(name === "mID"){
+              td.querySelector("input").id = td.querySelector("input").getAttribute("id").replace("0", count);
+              td.querySelector("input").value = mID;
             }
           })
-          document.querySelector("table#mainSources").appendChild(newRow);
+          mainForm.appendChild(newRow);
       }
       function removeSource(){
-          const count = document.querySelector("table#mainSources").querySelectorAll("tr").length;
+          const count = mainForm.querySelectorAll("tr").length;
           if(count>1)//protect the first row.
-            document.querySelector("table#mainSources").deleteRow(count-1);
+            mainForm.deleteRow(count-1);
       }
     </script>
     <script>
       window.extensionBridge.register({
         init: function(info) {
           if (info.settings) {
+            console.log (info)
             // TODO Populate form values from persisted settings.
+            document.querySelector("input#libPreloader").checked = info.settings.libPreLoad;
+            document.querySelector("tr#tr-0 > td[name='alias']>input").value = info.settings.mIDs[0]["alias"]
+            document.querySelector("tr#tr-0 > td[name='mID']>input").value = info.settings.mIDs[0]["mID"]
+            for(var i = 1; i < info.settings.mIDs.length; i++){
+              console.warn(info.settings.miDs)
+              console.warn(i)
+              addSource(info.settings.mIDs[i]["alias"], info.settings.mIDs[i]["mID"]);
+            }
           }
         },
 
         getSettings: function() {
           // TODO Return settings object from form values.
+          const settings = {};
+          settings.mIDs = []
+          mainForm.querySelectorAll("tr").forEach(tr => {
+            settings.mIDs.push({
+              "alias" : tr.querySelector("td[name='alias']>input").value,
+              "mID" : tr.querySelector("td[name='mID']>input").value
+            })
+          })
+          settings.libPreLoad = document.querySelector("input#libPreloader").checked;
+          return settings;
         },
 
         validate: function() {
-          // TODO Return whether settings are valid.
+          return document.querySelector("form#mainCfg").checkValidity();
         }
       });
     </script>
