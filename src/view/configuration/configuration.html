@@ -5,9 +5,61 @@
     <title>Extension Configuration</title>
   </head>
   <body>
-    Extension Configuration Template
+    <form id="mainCfg">
+      <br>
+      Please add your Measurement IDs. Add meaningful aliases so that it would be easier for you to use the Measurement ids.
+      <br><br><br>
+      <table id="mainSources">
+        <tr id="tr-0">
+          <td name="alias">
+            <label>GA4 Source Alias :</label>
+            <input type="text" id="measurementAlias-0" minlength="1" value="Default">
+          </td>
+          <td width="20"></td>
+          <td name="mID">
+            <label>GA4 Source Measurement ID :</label>
+            <input type="text" id="measurementId-0" maxlength="12" minlength="12" placeholder="G-XXXXXXXXXX">
+          </td>
+        </tr>
+      </table>
+    </form>
+    <br><br><br>
+    <table>
+      <tr>
+        <td>
+          <button id="addSource" onclick="addSource()">Add another GA4 Source</button>
+        </td>
+        <td width="40"></td>
+        <td>
+          <button id="removeSource" onclick="removeSource()">Remove the last GA4 Source</button>
+        </td>
+      </tr>
+    </table>
+    
+    
 
     <script src="https://assets.adobedtm.com/activation/reactor/extensionbridge/extensionbridge.min.js"></script>
+    <script>
+      function addSource(){
+          const count = document.querySelector("table#mainSources").querySelectorAll("tr").length;
+          const newRow = document.querySelector("tr#tr-0").cloneNode(true);
+          newRow.id = "tr-"+count;
+          newRow.querySelectorAll("td").forEach(td => {
+            const name = td.getAttribute("name");
+            if (name == "alias" || name == "mID"){
+              td.querySelector("label").innerHTML = td.querySelector("label").innerHTML.replace(" :", + count + ":");
+              td.querySelector("input").id = td.querySelector("input").getAttribute("id").replace("0",count);
+              td.querySelector("input").value = "";
+            }
+          })
+          document.querySelector("table#mainSources").appendChild(newRow);
+      }
+      function removeSource(){
+          const count = document.querySelector("table#mainSources").querySelectorAll("tr").length;
+          if(count>1)//protect the first row.
+            document.querySelector("table#mainSources").deleteRow(count-1);
+      }
+    </script>
     <script>
       window.extensionBridge.register({
         init: function(info) {
