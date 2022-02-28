@@ -5,35 +5,35 @@ This extension is aimed to allow comfortable GA4 implementations via Adobe Launc
 ## Progress
 
 - Extension CFG: **90%**
- - Extension config allowing multiple GA4 measurement ids **Done**
- - Flexible validation and pre-population **Done**
- - Allow DE usage for Measurement IDs **Done**
- - Allow the ability for the user to choose where the lib is loaded **In Progress**  
- - Design **TBD**
+  - Extension config allowing multiple GA4 measurement ids **Done**
+  - Flexible validation and pre-population **Done**
+  - Allow DE usage for Measurement IDs **Done**
+  - Allow the ability for the user to choose where the lib is loaded **In Progress**  
+  - Design **TBD**
 
 - GA4 Config Data Element[^1] **80%**
- - Extension config allowing multiple properties **Done**
- - Flexible validation and pre-population **Done**
- - Allow DE usage for names and values **Done**
- - Add scope switch **Done**
- - A way to make these DEs available in Actions **On Hold**, 
- - Design **TBD**
+  - Extension config allowing multiple properties **Done**
+  - Flexible validation and pre-population **Done**
+  - Allow DE usage for names and values **Done**
+  - Add scope switch **Done**
+  - A way to make these DEs available in Actions **On Hold**, 
+  - Design **TBD**
 
 - GA4 Event Action[^2] **5%**
- - Add a switch for Page View **Planned**
- - Add an option to override or add new dimensions in every action **Planned**
- - Validation **Planned**
- - Prepopulation **Planned**
- - Add the ability to hook in an EEC payload[^3] **On Hold**
+  - Add a switch for Page View **Planned**
+  - Add an option to override or add new dimensions in every action **Planned**
+  - Validation **Planned**
+  - Prepopulation **Planned**
+  - Add the ability to hook in an EEC payload[^3] **On Hold**
 
 - Deploy the gtag library action **0%**
- - Look at the conflicts with existing GA UA extensions **Planned**
- - Allow usage of already deployed gtag lib **On Hold**
- - Conflicts with already deployed trackers? **On Hold**
+  - Look at the conflicts with existing GA UA extensions **Planned**
+  - Allow usage of already deployed gtag lib **On Hold**
+  - Conflicts with already deployed trackers? **On Hold**
 
 - Enhanced E-commerce[^4] **0%**
- - Extend the UI of the Event Action to allow for Manual setting of EEC fields **Planned**
- - Manual for EEC set up? **On Hold**
+  - Extend the UI of the Event Action to allow for Manual setting of EEC fields **Planned**
+  - Manual for EEC set up? **On Hold**
 
 
 [^1]: The aim of the GA4 config DE is to replicate what GTM has always had for UA tags, but no longer has for GA4 tags. You're supposed to set a set of dimensions (properties and parameters) here and their scope, after which you'll be able to re-use these config DEs with event tracking actions.
