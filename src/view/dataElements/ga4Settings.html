@@ -1,27 +1,187 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <style>
+      body {
+        font: 1em sans-serif;
+        padding: 0;
+        margin : 0 auto;
+      }
+
+      p * {
+        display: block;
+      }
+
+      input[type=email]{
+        -webkit-appearance: none;
+        appearance: none;
+
+        width: 100%;
+        border: 1px solid #333;
+        margin: 0;
+
+        font-family: inherit;
+        font-size: 90%;
+
+        box-sizing: border-box;
+      }
+
+      /* This is our style for the invalid fields */
+      input:invalid {
+        border-color: #900;
+        background-color: #FDD;
+      }
+
+      input:focus:invalid {
+        outline: none;
+      }
+
+      /* This is the style of our error messages */
+      .error {
+        width  : 100%;
+        padding: 0;
+
+        font-size: 80%;
+        color: white;
+        background-color: #900;
+        border-radius: 0 0 5px 5px;
+
+        box-sizing: border-box;
+      }
+
+      .error.active {
+        padding: 0.3em;
+      }
+    </style>
     <meta charset="UTF-8">
     <title>Data Element</title>
   </head>
   <body>
-    Data Element Template
-
+    <form id="mainCfg">
+      <br>
+      Please add your event properties to be comfortably used in GA4 event actions. <br> 
+      Note that these properties can still be easily overriden in every action if needed.<br> 
+      Due to GA4 being still in beta, we're not validating the max length of the input. Refer to <a href="https://support.google.com/analytics/answer/9267744?hl=en">here</a>.
+      <br><br><br>
+      <table id="mainSources">
+        <tr id="tr-0">
+          <td name="propName">
+            <input type="text" id="pName-0" required minlength="1" placeholder="Property Name">
+            <button
+              onclick="openDESelector(this)"
+              class="_spectrum-ActionButton_7a745 _spectrum-ActionButton--quiet_7a745" type="button"
+              aria-label="Select a data element"><svg viewBox="0 0 36 36"
+              class="_spectrum-Icon_8ac98 _spectrum-Icon--sizeS_8ac98 _spectrum-Icon_7a745" focusable="false"
+              aria-hidden="true" role="img">
+              <ellipse cx="18" cy="7" rx="16" ry="5"></ellipse>
+              </svg>
+            </button>
+          </td>
+          <td width="20"></td>
+          <td name="propValue">
+            <input type="text" id="pValue-0" required minlength="1" placeholder="Property Value">
+            <button
+              onclick="openDESelector(this)"
+              class="_spectrum-ActionButton_7a745 _spectrum-ActionButton--quiet_7a745" type="button"
+              aria-label="Select a data element"><svg viewBox="0 0 36 36"
+              class="_spectrum-Icon_8ac98 _spectrum-Icon--sizeS_8ac98 _spectrum-Icon_7a745" focusable="false"
+              aria-hidden="true" role="img">
+              <ellipse cx="18" cy="7" rx="16" ry="5"></ellipse>
+              </svg>
+            </button>
+          </td>
+          <td width="20"></td>
+          <td name="propScope">
+            <fieldset>
+              <label><input type="radio" name="scope" value="eventScope" checked> Event Scope</label><br>
+              <label><input type="radio" name="scope" value="userScope"> User Scope</label>
+            </fieldset>
+          </td>
+        </tr>
+      </table>
+    </form>
+    <table>
+      <tr>
+        <td>
+          <button id="addSource" onclick="addSource()">Add another Property</button>
+        </td>
+        <td width="40"></td>
+        <td>
+          <button id="removeSource" onclick="removeSource()">Remove the last Property</button>
+        </td>
+      </tr>
+    </table>
+    <br>
     <script src="https://assets.adobedtm.com/activation/reactor/extensionbridge/extensionbridge.min.js"></script>
+    <script>
+      function openDESelector(target){
+        window.extensionBridge.openDataElementSelector().then(function(dataElement) {
+          target.parentElement.querySelector("input").value = dataElement;
+        });
+      }
+    </script>
+    <script>//Globals:
+      const mainForm = document.querySelector("table#mainSources");
+    </script>
+    <script>
+      function addSource(alias = "", mID = "", pActionScope = true){
+        const newRow = document.querySelector("tr#tr-0").cloneNode(true);
+        const count = mainForm.querySelectorAll("tr").length;
+        newRow.id = "tr-" + count;
+          newRow.querySelectorAll("td").forEach(td => {
+            const name = td.getAttribute("name");
+            if (name === "propName"){
+              td.querySelector("input").id = td.querySelector("input").getAttribute("id").replace("0", count);
+              td.querySelector("input").value = alias;
+            } else if(name === "propValue"){
+              td.querySelector("input").id = td.querySelector("input").getAttribute("id").replace("0", count);
+              td.querySelector("input").value = mID;
+            } else if(name === "propScope"){
+              td.querySelector("input[value='userScope']").name += count;
+              td.querySelector("input[value='eventScope']").name += count;
+              pActionScope ? null : td.querySelector("input[value='userScope']").checked = true;
+
+            }
+          })
+          mainForm.appendChild(newRow);
+      }
+      function removeSource(){
+          const count = mainForm.querySelectorAll("tr").length;
+          if(count>1)//protect the first row.
+            mainForm.deleteRow(count-1);
+      }
+    </script>
     <script>
       window.extensionBridge.register({
         init: function(info) {
           if (info.settings) {
             // TODO Populate form values from persisted settings.
+            document.querySelector("tr#tr-0>td[name='propName']>input").value = info.settings.gaConfig[0]["pName"];
+            document.querySelector("tr#tr-0>td[name='propValue']>input").value = info.settings.gaConfig[0]["pVal"];
+            info.settings.gaConfig[0]["pActionScope"] ? null : document.querySelector("tr#tr-0 > * input[value='userScope']").checked = true;
+            for(var i = 1; i < info.settings.gaConfig.length; i++){
+              addSource(info.settings.gaConfig[i]["pName"], info.settings.gaConfig[i]["pVal"], info.settings.gaConfig[i]["pActionScope"]);
+            }
           }
         },
 
         getSettings: function() {
           // TODO Return settings object from form values.
+          const settings = {};
+          settings.gaConfig = [];
+          mainForm.querySelectorAll("tr").forEach(tr => {
+            const actionScope = tr.querySelector("input[value='eventScope']").checked;
+            settings.gaConfig.push({
+              "pName" : tr.querySelector("td[name='propName']>input").value,
+              "pVal" : tr.querySelector("td[name='propValue']>input").value,
+              "pActionScope" : actionScope
+            })
+          })
+          return settings;
         },
 
         validate: function() {
-          // TODO Return whether settings are valid.
+          return document.querySelector("form#mainCfg").checkValidity();
         }
       });
     </script>
