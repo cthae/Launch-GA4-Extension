@@ -4,11 +4,12 @@ This extension is aimed to allow comfortable GA4 implementations via Adobe Launc
 
 ## Progress
 
-- Extension CFG: **90%**
+- Extension CFG: **85%**
   - Extension config allowing multiple GA4 measurement ids **Done**
   - Flexible validation and pre-population **Done**
   - Allow DE usage for Measurement IDs **Done**
   - Allow the ability for the user to choose where the lib is loaded **In Progress**  
+  - Allow DE-based centralized consent management. If the DE returns false, we \_satellite.logger.warn a debugging message saying that the consent DE blocks the extension. **Planned**
   - Design **TBD**
 
 - GA4 Config Data Element[^1] **80%**
@@ -25,6 +26,7 @@ This extension is aimed to allow comfortable GA4 implementations via Adobe Launc
   - Validation **Planned**
   - Prepopulation **Planned**
   - Add the ability to hook in an EEC payload[^3] **On Hold**
+  - Consent blocking **Planned**
 
 - Deploy the gtag library action **0%**
   - Look at the conflicts with existing GA UA extensions **Planned**
